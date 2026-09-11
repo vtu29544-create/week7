@@ -1,0 +1,81 @@
+import java.util.HashMap;
+
+class UndergroundSystem {
+
+    // id -> [stationName, checkInTime]
+    HashMap<Integer, Pair> checkInData;
+
+    // "start#end" -> [totalTime, numberOfTrips]
+    HashMap<String, int[]> travelData;
+
+    public UndergroundSystem() {
+        checkInData = new HashMap<>();
+        travelData = new HashMap<>();
+    }
+
+    public void checkIn(int id, String stationName, int t) {
+        checkInData.put(id, new Pair(stationName, t));
+    }
+
+    public void checkOut(int id, String stationName, int t) {
+
+        // Get customer's check-in information
+        Pair checkIn = checkInData.get(id);
+
+        String startStation = checkIn.station;
+        int startTime = checkIn.time;
+
+        // Calculate travel time
+        int travelTime = t - startTime;
+
+        // Create route key
+        String route = startStation + "#" + stationName;
+
+        // If route doesn't exist, create it
+        if (!travelData.containsKey(route)) {
+            travelData.put(route, new int[]{0, 0});
+        }
+
+        // Update total time
+        travelData.get(route)[0] += travelTime;
+
+        // Update number of trips
+        travelData.get(route)[1]++;
+
+        // Customer is no longer checked in
+        checkInData.remove(id);
+    }
+
+    public double getAverageTime(String startStation, String endStation) {
+
+        String route = startStation + "#" + endStation;
+
+        int[] data = travelData.get(route);
+
+        int totalTime = data[0];
+        int numberOfTrips = data[1];
+
+        return (double) totalTime / numberOfTrips;
+    }
+
+    // Helper class
+    class Pair {
+        String station;
+        int time;
+
+        Pair(String station, int time) {
+            this.station = station;
+            this.time = time;
+        }
+    }
+
+  output-
+    Case 1
+Case 2
+Input
+["UndergroundSystem","checkIn","checkIn","checkIn","checkOut","checkOut","checkOut","getAverageTime","getAverageTime","checkIn","getAverageTime","checkOut","getAverageTime"]
+[[],[45,"Leyton",3],[32,"Paradise",8],[27,"Leyton",10],[45,"Waterloo",15],[27,"Waterloo",20],[32,"Cambridge",22],["Paradise","Cambridge"],["Leyton","Waterloo"],[10,"Leyton",24],["Leyton","Waterloo"],[10,"Waterloo",38],["Leyton","Waterloo"]]
+Output
+[null,null,null,null,null,null,null,14.00000,11.00000,null,11.00000,null,12.00000]
+Expected
+[null,null,null,null,null,null,null,14.00000,11.00000,null,11.00000,null,12.00000]
